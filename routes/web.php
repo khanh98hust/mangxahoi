@@ -18,3 +18,7 @@ Route::group(['middleware' => 'guest'], function () {
         return view('layouts.guest');
     });
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
