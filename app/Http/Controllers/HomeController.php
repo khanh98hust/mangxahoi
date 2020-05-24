@@ -33,4 +33,33 @@ class HomeController extends Controller
         return view('home', compact('user', 'wall'));
     }
 
+    public function search(Request $request)
+    {
+        $s = $request->input('s');
+        if (empty($s)) return redirect('/');
+
+        $user = Auth::user();
+        
+        $posts = Post::leftJoin('users', 'users.id', '=', 'posts.user_id')
+            ->where(function($query) use ($user) {
+
+                $query->where('users.private', 0)->orWhere(function($query) use ($user){
+                    $query->whereExists(function ($query) use($user){
+                        $query->select(DB::raw(1))
+                            ->from('user_following')
+                            ->whereRaw('user_following.following_user_id = users.id and user_following.follower_user_id = '.$user->id);
+                    });
+                })->orWhere(function($query) use ($user){
+                    $query->where('users.private', 1)->where('users.id', $user->id);
+                });
+
+            })->where('posts.content', 'like', '%'.$s.'%')->where('posts.group_id', 0)
+            ->groupBy('posts.id')->select('posts.*')->orderBy('posts.id', 'DESC')->get();
+
+        $comment_count = 2;
+
+        $users = User::where('name', 'like', '%'.$s.'%')->orWhere('username', 'like', '%'.$s.'%')->orderBy('name', 'ASC')->get();
+
+        return view('search', compact('users', 'posts', 'user', 'comment_count'));
+    }
 }
