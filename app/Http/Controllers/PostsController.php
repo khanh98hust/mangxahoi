@@ -145,4 +145,52 @@ class PostsController extends Controller
 
         return Response::json($response);
     }
+
+    public function comment(Request $request)
+    {
+        $user = Auth::user();
+
+        $response = array();
+        $response['code'] = 400;
+
+        $post = Post::find($request->input('id'));
+        $text = $request->input('comment');
+
+        if ($post && !empty($text)){
+            $comment = new PostComment();
+            $comment->post_id = $post->id;
+            $comment->comment_user_id = $user->id;
+            $comment->comment = $text;
+            if ($comment->save()){
+                $response['code'] = 200;
+                $html = View::make('widgets.post_detail.single_comment', compact('post', 'comment'));
+                $response['comment'] = $html->render();
+                $html = View::make('widgets.post_detail.comments_title', compact('post', 'comment'));
+                $response['comments_title'] = $html->render();
+            }
+        }
+
+        return Response::json($response);
+    }
+
+    public function deleteComment(Request $request)
+    {
+        $response = array();
+        $response['code'] = 400;
+
+        $post_comment = PostComment::find($request->input('id'));
+
+        if ($post_comment){
+            $post = $post_comment->post;
+            if ($post_comment->comment_user_id == Auth::id() || $post_comment->post->user_id == Auth::id()) {
+                if ($post_comment->delete()) {
+                    $response['code'] = 200;
+                    $html = View::make('widgets.post_detail.comments_title', compact('post'));
+                    $response['comments_title'] = $html->render();
+                }
+            }
+        }
+
+        return Response::json($response);
+    }
 }
