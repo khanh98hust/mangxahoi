@@ -28,3 +28,5 @@ Route::get('/search', 'HomeController@search');
 
 // Posts
 Route::post('/posts/new', 'PostsController@create');
+Route::post('/posts/like', 'PostsController@like');
+Route::post('/posts/likes', 'PostsController@likes');

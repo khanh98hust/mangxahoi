@@ -89,4 +89,60 @@ class PostsController extends Controller
 
         return Response::json($response);
     }
+
+    public function like(Request $request)
+    {
+        $user = Auth::user();
+
+        $response = array();
+        $response['code'] = 400;
+
+        $post = Post::find($request->input('id'));
+
+        if ($post){
+            $post_like = PostLike::where('post_id', $post->id)->where('like_user_id', $user->id)->get()->first();
+
+            if ($post_like) { // UnLike
+                if ($post_like->like_user_id == $user->id) {
+                    $deleted = DB::delete('delete from post_likes where post_id='.$post_like->post_id.' and like_user_id='.$post_like->like_user_id);
+                    if ($deleted){
+                        $response['code'] = 200;
+                        $response['type'] = 'unlike';
+                    }
+                }
+            }else{
+                // Like
+                $post_like = new PostLike();
+                $post_like->post_id = $post->id;
+                $post_like->like_user_id = $user->id;
+                if ($post_like->save()){
+                    $response['code'] = 200;
+                    $response['type'] = 'like';
+                }
+            }
+            if ($response['code'] == 200){
+                $response['like_count'] = $post->getLikeCount();
+            }
+        }
+
+        return Response::json($response);
+    }
+
+    public function likes(Request $request)
+    {
+        $user = Auth::user();
+
+        $response = array();
+        $response['code'] = 400;
+
+        $post = Post::find($request->input('id'));
+
+        if ($post){
+            $response['code'] = 200;
+            $html = View::make('widgets.post_detail.likes', compact('post'));
+            $response['likes'] = $html->render();
+        }
+
+        return Response::json($response);
+    }
 }
