@@ -32,3 +32,6 @@ Route::post('/posts/like', 'PostsController@like');
 Route::post('/posts/likes', 'PostsController@likes');
 Route::post('/posts/comment', 'PostsController@comment');
 Route::post('/posts/comments/delete', 'PostsController@deleteComment');
+Route::get('/posts/list', 'PostsController@fetch');
+Route::get('/post/{id}', 'PostsController@single');
+Route::post('/posts/delete', 'PostsController@delete');
