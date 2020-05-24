@@ -30,3 +30,5 @@ Route::get('/search', 'HomeController@search');
 Route::post('/posts/new', 'PostsController@create');
 Route::post('/posts/like', 'PostsController@like');
 Route::post('/posts/likes', 'PostsController@likes');
+Route::post('/posts/comment', 'PostsController@comment');
+Route::post('/posts/comments/delete', 'PostsController@deleteComment');
