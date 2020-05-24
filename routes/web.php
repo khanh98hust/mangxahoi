@@ -25,3 +25,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 // Search
 Route::get('/search', 'HomeController@search');
+
+// Posts
+Route::post('/posts/new', 'PostsController@create');
