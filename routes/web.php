@@ -22,3 +22,6 @@ Route::group(['middleware' => 'guest'], function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+// Search
+Route::get('/search', 'HomeController@search');
