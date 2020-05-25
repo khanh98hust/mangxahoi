@@ -64,3 +64,4 @@ Route::get('/direct-messages/show/{id}', 'MessagesController@index');
 Route::post('/direct-messages/chat', 'MessagesController@chat');
 Route::post('/direct-messages/delete-chat', 'MessagesController@deleteChat');
 Route::post('/direct-messages/send', 'MessagesController@send');
+Route::post('/direct-messages/people-list', 'MessagesController@peopleList');
