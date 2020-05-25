@@ -54,3 +54,6 @@ Route::post('/settings', array(
 Route::get('/{username}', 'ProfileController@index');
 Route::get('/{username}/following', 'ProfileController@following');
 Route::get('/{username}/followers', 'ProfileController@followers');
+Route::post('/{username}/upload/profile-photo', 'ProfileController@uploadProfilePhoto');
+Route::post('/{username}/upload/cover', 'ProfileController@uploadCover');
+Route::post('/{username}/save/information', 'ProfileController@saveInformation');
