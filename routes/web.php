@@ -40,3 +40,4 @@ Route::post('/posts/delete', 'PostsController@delete');
 Route::post('/follow', 'FollowController@follow');
 Route::post('/follower/request', 'FollowController@followerRequest');
 Route::post('/follower/denied', 'FollowController@followDenied');
+Route::get('/followers/pending', 'FollowController@pending');
