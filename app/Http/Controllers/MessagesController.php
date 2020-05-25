@@ -163,4 +163,34 @@ class MessagesController extends Controller
 
         return Response::json($response);
     }
+
+    public function newMessages(Request $request)
+    {
+        $response = array();
+        $response['code'] = 400;
+
+        $friend = User::find($request->input('id'));
+
+        $user = Auth::user();
+
+        if ($friend){
+            $response['code'] = 200;
+
+            $message_list = UserDirectMessage::where('receiver_delete', 0)
+                ->where('receiver_user_id', $user->id)->where('sender_user_id', $friend->id)->where('seen', '0')->orderBy('id', 'DESC')->limit(20);
+
+            if ($message_list->count() > 0) {
+                $response['find'] = 1;
+                $html = View::make('messages.widgets.new_messages', compact('user', 'friend', 'message_list'));
+                $response['html'] = $html->render();
+
+                $update_all = UserDirectMessage::where('receiver_delete', 0)
+                    ->where('receiver_user_id', $user->id)->where('sender_user_id', $friend->id)->where('seen', 0)->update(['seen' => 1]);
+            }else{
+                $response['find'] = 0;
+            }
+        }
+
+        return Response::json($response);
+    }
 }
