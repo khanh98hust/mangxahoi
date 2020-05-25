@@ -61,3 +61,5 @@ Route::post('/{username}/save/information', 'ProfileController@saveInformation')
 // Messages
 Route::get('/direct-messages', 'MessagesController@index');
 Route::get('/direct-messages/show/{id}', 'MessagesController@index');
+Route::post('/direct-messages/chat', 'MessagesController@chat');
+Route::post('/direct-messages/delete-chat', 'MessagesController@deleteChat');
