@@ -35,3 +35,6 @@ Route::post('/posts/comments/delete', 'PostsController@deleteComment');
 Route::get('/posts/list', 'PostsController@fetch');
 Route::get('/post/{id}', 'PostsController@single');
 Route::post('/posts/delete', 'PostsController@delete');
+
+// Follow
+Route::post('/follow', 'FollowController@follow');
