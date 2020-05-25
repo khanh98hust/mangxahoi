@@ -38,3 +38,5 @@ Route::post('/posts/delete', 'PostsController@delete');
 
 // Follow
 Route::post('/follow', 'FollowController@follow');
+Route::post('/follower/request', 'FollowController@followerRequest');
+Route::post('/follower/denied', 'FollowController@followDenied');
