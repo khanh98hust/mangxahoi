@@ -49,3 +49,6 @@ Route::post('/settings', array(
     'as' => 'settings',
     'uses' => 'SettingsController@update'
 ));
+
+// Profile
+Route::get('/{username}', 'ProfileController@index');
