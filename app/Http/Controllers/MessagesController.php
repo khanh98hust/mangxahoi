@@ -193,4 +193,30 @@ class MessagesController extends Controller
 
         return Response::json($response);
     }
+
+    public function deleteMessage(Request $request)
+    {
+        $response = array();
+        $response['code'] = 400;
+
+        $message = UserDirectMessage::find($request->input('id'));
+
+        $user = Auth::user();
+
+        if ($message){
+            $response['code'] = 200;
+
+            if ($message->sender_user_id == $user->id){
+                $message->sender_delete = 1;
+            }else{
+                $message->receiver_delete = 1;
+            }
+
+            if ($message->save()){
+                $response['code'] = 200;
+            }
+        }
+
+        return Response::json($response);
+    }
 }
