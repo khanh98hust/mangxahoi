@@ -41,3 +41,11 @@ Route::post('/follow', 'FollowController@follow');
 Route::post('/follower/request', 'FollowController@followerRequest');
 Route::post('/follower/denied', 'FollowController@followDenied');
 Route::get('/followers/pending', 'FollowController@pending');
+
+//Setting
+
+Route::get('/settings', 'SettingsController@index');
+Route::post('/settings', array(
+    'as' => 'settings',
+    'uses' => 'SettingsController@update'
+));
