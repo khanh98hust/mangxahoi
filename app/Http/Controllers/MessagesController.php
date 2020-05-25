@@ -119,4 +119,48 @@ class MessagesController extends Controller
 
         return Response::json($response);
     }
+
+    public function peopleList(Request $request)
+    {
+        $response = array();
+        $response['code'] = 200;
+
+        $user = Auth::user();
+
+        $active_user_id = $request->input('active_user_id');
+
+        $user_list = [];
+
+        $message_list = DB::select( DB::raw("select * from (select * from `user_direct_messages` where ((`sender_user_id` = '".$user->id."' and `sender_delete` = '0') or (`receiver_user_id` = '".$user->id."' and `receiver_delete` = '0')) order by `id` desc limit 200000) as group_table group by receiver_user_id, receiver_user_id order by id desc") );
+
+        $new_list = [];
+        foreach(array_reverse($message_list) as $list){
+            $msg = new UserDirectMessage();
+            $msg->dataImport($list);
+            $new_list[] = $msg;
+        }
+
+        foreach (array_reverse($new_list) as $message){
+            if ($message->sender_user_id == $user->id){
+                if (array_key_exists($message->receiver_user_id, $user_list)) continue;
+                $user_list[$message->receiver_user_id] = [
+                    'new' => false,
+                    'message' => $message,
+                    'user' => $message->receiver
+                ];
+            }else{
+                if (array_key_exists($message->sender_user_id, $user_list)) continue;
+                $user_list[$message->sender_user_id] = [
+                    'new' => ($message->seen == 0)?true:false,
+                    'message' => $message,
+                    'user' => $message->sender
+                ];
+            }
+        }
+
+        $html = View::make('messages.widgets.people_list', compact('user', 'active_user_id', 'user_list'));
+        $response['html'] = $html->render();
+
+        return Response::json($response);
+    }
 }
