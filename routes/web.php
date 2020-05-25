@@ -57,3 +57,7 @@ Route::get('/{username}/followers', 'ProfileController@followers');
 Route::post('/{username}/upload/profile-photo', 'ProfileController@uploadProfilePhoto');
 Route::post('/{username}/upload/cover', 'ProfileController@uploadCover');
 Route::post('/{username}/save/information', 'ProfileController@saveInformation');
+
+// Messages
+Route::get('/direct-messages', 'MessagesController@index');
+Route::get('/direct-messages/show/{id}', 'MessagesController@index');
