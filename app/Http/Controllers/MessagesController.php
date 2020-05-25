@@ -95,4 +95,28 @@ class MessagesController extends Controller
         return Response::json($response);
     }
 
+    public function send(Request $request)
+    {
+        $response = array();
+        $response['code'] = 400;
+
+        $friend = User::find($request->input('id'));
+
+        $user = Auth::user();
+
+        if ($friend){
+            $message = new UserDirectMessage();
+            $message->sender_user_id = $user->id;
+            $message->receiver_user_id = $friend->id;
+            $message->message = $request->input('message');
+            if ($message->save()){
+                $response['code'] = 200;
+                $html = View::make('messages.widgets.single_message', compact('user', 'message'));
+                $response['html'] = $html->render();
+                $response['message_id'] = $message->id;
+            }
+        }
+
+        return Response::json($response);
+    }
 }
