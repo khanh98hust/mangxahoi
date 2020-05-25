@@ -67,4 +67,4 @@ Route::post('/direct-messages/send', 'MessagesController@send');
 Route::post('/direct-messages/people-list', 'MessagesController@peopleList');
 Route::post('/direct-messages/new-messages', 'MessagesController@newMessages');
 Route::post('/direct-messages/delete-message', 'MessagesController@deleteMessage');
-
+Route::post('/direct-messages/notifications', 'MessagesController@notifications');
