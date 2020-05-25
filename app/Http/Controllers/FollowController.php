@@ -61,4 +61,53 @@ class FollowController extends Controller
 
         return Response::json($response);
     }
+
+    public function followerRequest(Request $request)
+    {
+        $response = array();
+        $response['code'] = 400;
+
+        $type = $request->input('type');
+        $id = $request->input('id');
+
+        $following = UserFollowing::find($id);
+
+        if ($following){
+            if ($following->following_user_id = Auth::id()){
+
+                if ($type == 2){
+                    if ($following->delete()){
+                        $response['code'] = 200;
+                    }
+                }else{
+                    $following->allow = 1;
+                    if ($following->save()){
+                        $response['code'] = 200;
+                    }
+                }
+
+            }
+        }
+
+        return Response::json($response);
+    }
+
+    public function followDenied(Request $request)
+    {
+        $response = array();
+        $response['code'] = 400;
+
+        $me = $request->input('me');
+        $follower = $request->input('follower');
+
+        $relation = UserFollowing::where('following_user_id', $me)->where('follower_user_id', $follower)->get()->first();
+
+        if ($relation){
+            if ($relation->delete()){
+                $response['code'] = 200;
+            }
+        }
+
+        return Response::json($response);
+    }
 }
