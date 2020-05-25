@@ -48,4 +48,112 @@ class User extends Authenticatable
         // if (count($this->$Model) > []) return true;
         // return false;
     }
+
+    public function getPhoto($w = null, $h = null){
+        if (!empty($this->profile_path)){
+            $path = 'storage/uploads/profile_photos/'.$this->profile_path;
+        }else {
+            $path = "images/profile-picture.png";
+        }
+        if ($w == null && $h == null){
+            return url('/'.$path);
+        }
+        $image = '/resizer.php?';
+        if ($w > -1) $image .= '&w='.$w;
+        if ($h > -1) $image .= '&h='.$h;
+        $image .= '&zc=1';
+        $image .= '&src='.$path;
+        return url($image);
+    }
+
+    public function getCover($w = null, $h = null){
+        if (!empty($this->cover_path)){
+            $path = 'storage/uploads/covers/'.$this->cover_path;
+        }else {
+            return "";
+        }
+        if ($w == null && $h == null){
+            return url('/'.$path);
+        }
+        $image = '/resizer.php?';
+        if ($w > -1) $image .= '&w='.$w;
+        if ($h > -1) $image .= '&h='.$h;
+        $image .= '&zc=1';
+        $image .= '&src='.$path;
+        return url($image);
+    }
+
+    public function getSex(){
+        if ($this->sex == 0) return "Male";
+        return "Female";
+    }
+
+    public function getPhone(){
+        return $this->phone;
+    }
+
+    public function getAge(){
+        if ($this->birthday) return date('Y') - $this->birthday->format('Y');
+    }
+
+    public function suggestedPeople($limit = 5, $city_id = null, $hobby_id = null, $all = null){
+        $list = User::where('id', '!=', $this->id);
+
+        if ($all == null) {
+            $list = $list->whereNotIn('id', function ($q) {
+                $q->select('following_user_id')->from('user_following')->where('follower_user_id', $this->id);
+            });
+        }
+
+        if ($city_id != null && $hobby_id != null){
+            $list = $list->whereExists(function ($query) use($city_id) {
+                $query->select(DB::raw(1))
+                    ->from('user_locations')
+                    ->whereRaw('users.id = user_locations.user_id and user_locations.city_id = '.$city_id);
+            })->whereExists(function ($query) use($hobby_id) {
+                $query->select(DB::raw(1))
+                    ->from('user_hobbies')
+                    ->whereRaw('users.id = user_hobbies.user_id and user_hobbies.hobby_id = '.$hobby_id);
+            });
+        }
+
+        $list = $list->limit($limit)->inRandomOrder()->get();
+        return $list;
+    }
+
+    public function validateUsername($filter = "[^a-zA-Z0-9\-\_\.]"){
+        return preg_match("~" . $filter . "~iU", $this->username) ? false : true;
+    }
+
+    public function isPrivate(){
+        if ($this->private == 1) return true;
+        return false;
+    }
+
+    public function canSeeProfile($user_id){
+        if ($this->id == $user_id || !$this->isPrivate()) return true;
+        $relation = $this->follower()->where('follower_user_id', $user_id)->where('allow', 1)->get()->first();
+        if ($relation){
+            return true;
+        }
+        return false;
+    }
+
+    public function messagePeopleList(){
+        $list = $this->follower()->where('allow',1)->with('follower')->whereExists(function ($query) {
+            $query->select(DB::raw(1))
+                ->from('user_following as f')
+                ->whereRaw('f.following_user_id = user_following.follower_user_id')
+                ->whereRaw('f.follower_user_id = '.$this->id)
+                ->whereRaw('f.allow = 1');
+        });
+
+        return $list;
+    }
+
+    public function hasHobby($hobby_id){
+        $check = $this->hobbies()->where('hobby_id', $hobby_id)->get()->first();
+        if ($check) return true;
+        return false;
+    }
 }
