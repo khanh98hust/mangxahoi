@@ -52,3 +52,5 @@ Route::post('/settings', array(
 
 // Profile
 Route::get('/{username}', 'ProfileController@index');
+Route::get('/{username}/following', 'ProfileController@following');
+Route::get('/{username}/followers', 'ProfileController@followers');

@@ -50,4 +50,34 @@ class ProfileController extends Controller
         return view('profile.index', compact('user', 'my_profile', 'wall', 'can_see'));
     }
 
+    public function following(Request $request, $username)
+    {
+        if (!$this->secure($username)) return redirect('/404');
+
+        $user = $this->user;
+
+        $list = $user->following()->where('allow', 1)->with('following')->get();
+
+        $my_profile = $this->my_profile;
+
+        $can_see = ($my_profile)?true:$user->canSeeProfile(Auth::id());
+
+        return view('profile.following', compact('user', 'list', 'my_profile', 'can_see'));
+    }
+
+    public function followers(Request $request, $username)
+    {
+        if (!$this->secure($username)) return redirect('/404');
+
+        $user = $this->user;
+
+        $list = $user->follower()->where('allow', 1)->with('follower')->get();
+
+        $my_profile = $this->my_profile;
+
+        $can_see = ($my_profile)?true:$user->canSeeProfile(Auth::id());
+
+        return view('profile.followers', compact('user', 'list', 'my_profile', 'can_see'));
+    }
+
 }
